@@ -1,3 +1,6 @@
+'''
+Convert hpl Halo files to netCDF
+'''
 import os
 cd=os.path.dirname(__file__)
 import sys
@@ -10,11 +13,11 @@ import shutil
 import re
 
 #%% Inputs
-source=os.path.join(cd,'data/raw/*hpl')
-site='sms'
+source=os.path.join(cd,'data/raw/User*hpl')#source of hpl data files
+site='sms'#site ID (sms=Siemens turbine)
 instrument='lidar'
-z_id='z01'
-level='00'
+z_id='z01'#instrument index (if there are more instruments of the same type)
+level='00'#input level of hpl (always 00)
 
 #%% Functions
 
@@ -23,6 +26,10 @@ def rename(filename,site,instrument,z_id,level):
     if 'Stare' in filename:
         pattern = r"Stare_\d+_(\d{8})_(\d{2})_(.*?)\.hpl"
         scan_type='stare'
+    elif 'User' in filename:
+        pattern = r"User\d{1}_\d+_(\d{8})_(\d{6})\.hpl"
+        scan_type='user'
+        
     match = re.search(pattern, os.path.basename(filename))
     date_part = match.group(1)  
     if len(match.group(2))<6:
