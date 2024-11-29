@@ -29,6 +29,9 @@ power_cuts=['2024-09-04T23:31:13',
             '2024-11-05T18:06:36',
             '2024-11-11T21:23:35']
 
+date_sel1='2024-10-24T00:00:00'
+date_sel2='2024-11-11T00:00:00'
+
 #stats
 min_duration=3500#[s] minimum stare duration
 min_ele=89#[deg] minimum elevation
@@ -98,6 +101,11 @@ snr_sel_ma=snr_sel.rolling(time=window, center=True).construct("window").median(
 
 rws_std_sel=Output.rws_std.where(Output.range>=min_range).where(Output.range<max_range).median(dim='range')
 rws_std_sel_ma=rws_std_sel.rolling(time=window, center=True).construct("window").median(dim='window')
+
+
+#time average
+snr1=Output.snr.where(Output.time<np.datetime64(date_sel1)).median(dim='time')
+snr2=Output.snr.where(Output.time>np.datetime64(date_sel2)).median(dim='time')
 
 #%% Plots
 plt.close('all')
@@ -209,7 +217,7 @@ for p in power_cuts:
 ax=fig.add_subplot(gs[1,0])
 plt.plot(Output.time,rws_std_sel,'.r',markersize=10,label='No average')
 plt.plot(Output.time, rws_std_sel_ma,'-r',linewidth=2,label=f'{window}-day mean')
-plt.ylabel(f'StDev of RWS \n between {min_range} m and {max_range} ' +r'[m s$^{-1}$')
+plt.ylabel(f'StDev of RWS between {min_range} m \n and {max_range} ' +r'[m s$^{-1}$')
 plt.xlim([Output.time[0],Output.time[-1]])
 plt.grid()
 plt.legend(draggable=True)
@@ -228,6 +236,14 @@ plt.plot(Output.time,Output.dr,'.k')
 plt.ylabel('Gate length [m]')
 plt.xlabel('Time (UTC)')
 plt.xlim([Output.time[0],Output.time[-1]])
+plt.grid()
+
+plt.figure()
+plt.plot(Output.range,snr1,label=f'Before {date_sel1[:10]}',color='g',linewidth=3)
+plt.plot(Output.range,snr2,label=f'After {date_sel2[:10]}',color='r',linewidth=3)
+plt.xlabel('Range [m]')
+plt.ylabel('SNR [dB]')
+plt.legend()
 plt.grid()
 
 
