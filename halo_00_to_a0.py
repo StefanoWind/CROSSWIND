@@ -13,18 +13,20 @@ import shutil
 import re
 
 #%% Inputs
-source=os.path.join(cd,'data/raw/User*hpl')#source of hpl data files
+source=os.path.join(cd,'data/raw/Halo-257/**/*hpl')#source of hpl data files
 site='sms'#site ID (sms=Siemens turbine)
 instrument='lidar'
 z_id='z01'#instrument index (if there are more instruments of the same type)
 level='00'#input level of hpl (always 00)
+save_path=os.path.join(cd,'data')
+replace=False
 
 #%% Functions
 
-def rename(filename,site,instrument,z_id,level):
+def rename(filename,site,instrument,z_id,level,save_path=None):
     
     if 'Stare' in filename:
-        pattern = r"Stare_\d+_(\d{8})_(\d{2})_(.*?)\.hpl"
+        pattern = r"Stare_\d+_(\d{8})_(\d{2})(.*?)\.hpl"
         scan_type='stare'
     elif 'User' in filename:
         pattern = r"User\d{1}_\d+_(\d{8})_(\d{6})\.hpl"
@@ -48,9 +50,11 @@ def rename(filename,site,instrument,z_id,level):
     else:
         time_part = match.group(2)
         
-   
-    directory=os.path.join('/'.join(os.path.dirname(filename).split('/')[:-1]),site+'.'+instrument+'.'+z_id+'.'+level)
-    utl.mkdir(directory)
+    if save_path==None:
+        directory=os.path.join('/'.join(os.path.dirname(filename).split('/')[:-1]),site+'.'+instrument+'.'+z_id+'.'+level)
+        utl.mkdir(directory)
+    else:
+        directory=os.path.join(save_path,site+'.'+instrument+'.'+z_id+'.'+level)
     filename_out=site+'.'+instrument+'.'+z_id+'.'+level+'.'+date_part+'.'+time_part+'.'+scan_type+os.path.splitext(filename)[1]
     shutil.copyfile(filename, os.path.join(directory,filename_out))
     return os.path.join(directory,filename_out)
@@ -197,11 +201,16 @@ def read(filename):
     return dataset
 
 #%% Initalization
-files=glob.glob(source)
+files=glob.glob(source, recursive=True)
 
 #%% Main
 for f in files:
-    filename=rename(f,site,instrument,z_id,level)
-    dataset=read(filename)
-    utl.mkdir(os.path.dirname(filename.replace('.'+level,'.a0')))
-    dataset.to_netcdf(os.path.join(os.path.dirname(filename.replace('.'+level,'.a0')),os.path.basename(filename).replace('.'+level+'.','.a0.').replace('hpl','nc')))
+    try:
+        filename=rename(f,site,instrument,z_id,level,save_path)
+        new_filename=os.path.join(os.path.dirname(filename.replace('.'+level,'.a0')),os.path.basename(filename).replace('.'+level+'.','.a0.').replace('hpl','nc'))
+        if not os.path.exists(new_filename) or replace==True:
+            dataset=read(filename)
+            utl.mkdir(os.path.dirname(filename.replace('.'+level,'.a0')))
+            dataset.to_netcdf(new_filename)
+    except:
+        print(f+' failed')
