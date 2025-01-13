@@ -21,9 +21,9 @@ matplotlib.rcParams['font.size'] = 14
 
 #%% Inputs
 #dataset
-source=os.path.join(cd,'data/sms.lidar.z01.a0/*0000*nc')
+source=os.path.join(cd,'data/sms.lidar.z01.a0/*00*nc')
 sdate='2024-08-28'#start date
-edate='2024-11-30'#end date
+edate='2024-12-03'#end date
 power_cuts=['2024-09-04T23:31:13',
             '2024-10-24T16:54:15',
             '2024-11-05T18:06:36',
@@ -93,7 +93,7 @@ Output['max_beta']=Output.beta.where(Output.range>=min_range_beta).where(Output.
 Output=Output.where(Output['max_beta']<max_beta)
 
 #resample
-Output=Output.resample(time='24h').nearest(tolerance='12h')
+Output=Output.resample(time='12h').nearest(tolerance='6h')
 
 #extract selection
 snr_sel=Output.snr.where(Output.range>=min_range).where(Output.range<max_range).median(dim='range')
