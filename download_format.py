@@ -11,7 +11,6 @@ import xarray as xr
 import numpy as np
 import glob
 from matplotlib import pyplot as plt
-import matplotlib.gridspec as gridspec
 from datetime import datetime
 from datetime import timedelta
 import matplotlib
