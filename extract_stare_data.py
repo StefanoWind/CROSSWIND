@@ -53,14 +53,14 @@ for s in sources:
         time0=Data.time.values[0]
         time=np.append(time,np.round(time0.astype('datetime64[m]').astype(float) / 60).astype('datetime64[h]'))
         dt=np.append(dt,np.float64(np.nanmedian(np.diff(Data.time.values)))/10**9)
-        ppr=np.append(ppr,Data.attrs['Pulses per ray'])
+        ppr=np.append(ppr,Data.attrs['Pulses or ray'])
         dr=np.append(dr,Data.attrs['Range gate length (m)'])
         
         r1=Data.distance.values
         snr=vstack(snr,np.interp(r,r1,Data['SNR'].median(dim='time').values))
-        rws=vstack(rws,np.interp(r,r1,Data['Radial_wind_speed'].median(dim='time').values))
-        rws_std=vstack(rws_std,np.interp(r,r1,Data['Radial_wind_speed'].std(dim='time').values))
-        beta=vstack(beta,np.interp(r,r1,Data.Beta.median(dim='time').values))
+        rws=vstack(rws,np.interp(r,r1,Data['radial_wind_speed'].median(dim='time').values))
+        rws_std=vstack(rws_std,np.interp(r,r1,Data['radial_wind_speed'].std(dim='time').values))
+        beta=vstack(beta,np.interp(r,r1,Data['beta'].median(dim='time').values))
 
 
     Output=xr.Dataset()
