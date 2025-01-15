@@ -15,7 +15,7 @@ import matplotlib
 plt.close('all')
 matplotlib.rcParams['font.family'] = 'serif'
 matplotlib.rcParams['mathtext.fontset'] = 'cm' 
-matplotlib.rcParams['font.size'] =26
+matplotlib.rcParams['font.size'] =30
 
 #%% Inputs
 sources={'257':os.path.join(cd,'data/nwtc.lidar.z01.a0.all.nc'),
@@ -59,7 +59,7 @@ ippr=0
 for ppr in pprs:
     idr=0
     for dr in drs: 
-        plt.text(ippr+0.5-0.05,idr+0.5,f'{str(int(da.loc[dr,ppr].values))}',fontsize=26,fontweight='bold')
+        plt.text(ippr+0.5-0.1,idr+0.5,f'{str(int(da.loc[dr,ppr].values))}',fontsize=26,fontweight='bold')
         idr+=1
     ippr+=1
 plt.xticks(np.arange(len(pprs))+0.5,pprs)
@@ -82,7 +82,7 @@ for ppr in pprs:
             ax.fill_between(Data[s].range,Data_sel['snr'].mean(dim='time')+Data_sel['snr'].std(dim='time'),
                             Data_sel['snr'].mean(dim='time')-Data_sel['snr'].std(dim='time'),color=colors[s],alpha=0.1)
             
-        plt.text(2500*0.78,-5-1,f'PPR={str(int(ppr))}\nΔr={str(int(dr))} m', bbox={'edgecolor':'k','facecolor':'b','alpha':0.25})
+        plt.text(2500*0.6,-5-2,f'PPR={str(int(ppr))}\nΔp={str(int(dr))} m', bbox={'edgecolor':'k','facecolor':'b','alpha':0.25})
         if idr==0:
             plt.xlabel('Range [m]')
         else:
@@ -99,7 +99,6 @@ for ppr in pprs:
 plt.legend(draggable=True,loc='upper left')
 plt.tight_layout()
 
-
 #RWS std
 fig=plt.figure(figsize=(30,20))
 ippr=0
@@ -114,13 +113,13 @@ for ppr in pprs:
             ax.fill_between(Data[s].range,Data_sel['rws_std'].mean(dim='time')+Data_sel['rws_std'].std(dim='time'),
                             Data_sel['rws_std'].mean(dim='time')-Data_sel['rws_std'].std(dim='time'),color=colors[s],alpha=0.1)
             
-        plt.text(2500*0.78,5,f'PPR={str(int(ppr))},\nΔr={str(int(dr))} m', bbox={'edgecolor':'k','facecolor':'b','alpha':0.25})
+        plt.text(2500*0.6,3.5,f'PPR={str(int(ppr))}\nΔp={str(int(dr))} m', bbox={'edgecolor':'k','facecolor':'b','alpha':0.25})
         if idr==0:
             plt.xlabel('Range [m]')
         else:
             ax.set_xticklabels([])
         if ippr==0:
-            plt.ylabel(r'StDev of radial wind speed [m s$^{-1}$]')
+            plt.ylabel('StDev of radial \n'+ r'wind speed [m s$^{-1}$]')
         else:
             ax.set_yticklabels([])
         plt.grid()
@@ -144,18 +143,46 @@ for ppr in pprs:
                      color=colors[s],label=s)
             ax.fill_between(Data[s].range,Data_sel['rws'].mean(dim='time')+Data_sel['rws'].std(dim='time'),
                             Data_sel['rws'].mean(dim='time')-Data_sel['rws'].std(dim='time'),color=colors[s],alpha=0.1)
-            
-        plt.text(2500*0.78,-2,f'PPR={str(int(ppr))}\nΔr={str(int(dr))} m', bbox={'edgecolor':'k','facecolor':'b','alpha':0.25})
+        plt.text(2500*0.6,-4,f'PPR={str(int(ppr))}\nΔp={str(int(dr))} m', bbox={'edgecolor':'k','facecolor':'b','alpha':0.25})
         if idr==0:
             plt.xlabel('Range [m]')
         else:
             ax.set_xticklabels([])
         if ippr==0:
-            plt.ylabel(r'Mean of radial wind speed [m s$^{-1}$]')
+            plt.ylabel('Mean of radial \n'+ r'wind speed [m s$^{-1}$]')
         else:
             ax.set_yticklabels([])
         plt.grid()
         plt.ylim([-5,5])
+                       
+        idr+=1
+    ippr+=1
+plt.legend(draggable=True,loc='upper left')
+plt.tight_layout()
+
+#RWS bias
+fig=plt.figure(figsize=(30,20))
+ippr=0
+for ppr in pprs:
+    idr=0
+    for dr in drs:
+        ax=plt.subplot(len(drs),len(pprs),(len(drs)-idr-1)*len(pprs)+ippr+1)
+        for s in sources:
+            Data_sel=Data[s].where(Data[s].ppr==ppr).where(Data[s].dr==dr)
+            plt.plot(Data_sel['snr'].values.flatten(),Data_sel['rws'].values.flatten(),'.',color=colors[s],label=s,markersize=10,alpha=0.1)
+            
+        plt.text(-10,5,f'PPR={str(int(ppr))}\nΔp={str(int(dr))} m', bbox={'edgecolor':'k','facecolor':'b','alpha':0.25})
+        if idr==0:
+            plt.xlabel('SNR [dB]')
+        else:
+            ax.set_xticklabels([])
+        if ippr==0:
+            plt.ylabel('Mean of radial \n'+ r'wind speed [m s$^{-1}$]')
+        else:
+            ax.set_yticklabels([])
+        plt.grid()
+        plt.ylim([-10,10])
+        plt.xlim([-30,10])
                        
         idr+=1
     ippr+=1
@@ -172,7 +199,7 @@ for ppr in pprs:
        
         plt.bar(list(sources.keys()),[Data[s].where(Data[s].ppr==ppr).where(Data[s].dr==dr).dt.mean() for s in sources],color='k')
         
-        plt.text(0,1.15,f'PPR={str(int(ppr))}\nΔr={str(int(dr))} m', bbox={'edgecolor':'k','facecolor':'b','alpha':0.25})
+        plt.text(-0.1,1.2,f'PPR={str(int(ppr))}\nΔp={str(int(dr))} m', bbox={'edgecolor':'k','facecolor':'b','alpha':0.25})
         if idr==0:
             plt.xlabel('Lidar SN')
         else:
@@ -182,7 +209,7 @@ for ppr in pprs:
         else:
             ax.set_yticklabels([])
         plt.grid()
-        plt.ylim([0,1.5])
+        plt.ylim([0,1.75])
                        
         idr+=1
     ippr+=1
