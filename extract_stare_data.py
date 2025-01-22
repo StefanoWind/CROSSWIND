@@ -58,7 +58,7 @@ for s in sources:
         ppr=np.append(ppr,Data.attrs['Pulses or ray'])
         dr=np.append(dr,Data.attrs['Range gate length (m)'])
         ele=np.append(ele,np.nanmedian(Data.elevation))
-        azi=np.append(azi,np.nanmedian(Data.elevation))
+        azi=np.append(azi,np.nanmedian(Data.azimuth))
         r1=Data.distance.values
         snr=vstack(snr,np.interp(r,r1,Data['SNR'].median(dim='time').values))
         rws=vstack(rws,np.interp(r,r1,Data['radial_wind_speed'].median(dim='time').values))
