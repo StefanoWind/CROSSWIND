@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Compare performance of two lidars
+Compare performance of two lidars dowin low elevation stares
 """
 
 import os
@@ -24,6 +24,7 @@ sources={'257':os.path.join(cd,'data/nwtc.lidar.z01.a0.20250115.20250115.nc'),
 colors={'257':'r','178':'k'}
 
 sel_r=250#[m]
+max_ele=15
 
 #%% Initialization
 Data={}
@@ -31,10 +32,11 @@ pprs=[]
 drs=[]
 for s in sources:
    Data[s]=xr.open_dataset(sources[s]).sortby('time')
-   Data[s]=Data[s]
-   pprs=np.append(pprs,Data[s].ppr)
-   drs=np.append(drs,Data[s].dr)
-
+   
+   if np.nanmax(Data[s].elevation)<max_ele: 
+       pprs=np.append(pprs,Data[s].ppr)
+       drs=np.append(drs,Data[s].dr)
+   
 pprs=[np.int(x) for x in np.unique(pprs)]
 drs=[np.int(x) for x in np.unique(drs)]
 

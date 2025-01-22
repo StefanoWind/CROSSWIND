@@ -43,6 +43,8 @@ for s in sources:
     snr=[]
     rws=[]
     beta=[]
+    ele=[]
+    azi=[]
     rws_std=[]
     time=np.array([],dtype='datetime64')
     dt=[]
@@ -55,7 +57,8 @@ for s in sources:
         dt=np.append(dt,np.float64(np.nanmedian(np.diff(Data.time.values)))/10**9)
         ppr=np.append(ppr,Data.attrs['Pulses or ray'])
         dr=np.append(dr,Data.attrs['Range gate length (m)'])
-        
+        ele=np.append(ele,np.nanmedian(Data.elevation))
+        azi=np.append(azi,np.nanmedian(Data.elevation))
         r1=Data.distance.values
         snr=vstack(snr,np.interp(r,r1,Data['SNR'].median(dim='time').values))
         rws=vstack(rws,np.interp(r,r1,Data['radial_wind_speed'].median(dim='time').values))
@@ -71,7 +74,11 @@ for s in sources:
     Output['ppr']=xr.DataArray(data=ppr,coords={'time':time})
     Output['dr']=xr.DataArray(data=dr,coords={'time':time})
     Output['dt']=xr.DataArray(data=dt,coords={'time':time})
+    Output['ele']=xr.DataArray(data=ele,coords={'time':time})
+    Output['azi']=xr.DataArray(data=azi,coords={'time':time})
     
-    Output.to_netcdf(os.path.join(cd,'data',os.path.dirname(f).split('/')[-1]+'.all.nc'))
+    Output.to_netcdf(os.path.join(cd,'data',os.path.dirname(f).split('/')[-1]+'.'+\
+                                  str(time[0]).replace('-','').replace('T','.').replace(':','')+'.'+\
+                                  str(time[-1]).replace('-','').replace('T','.').replace(':','')+'.nc'))
     
     
