@@ -48,7 +48,7 @@ for s in sources:
     rws_std=[]
     time=np.array([],dtype='datetime64')
     dt=[]
-    files=glob.glob(sources[s])
+    files=sorted(glob.glob(sources[s]))
     for f in files:
         Data=xr.open_dataset(f)
         
