@@ -34,7 +34,7 @@ warnings.filterwarnings('ignore')
 #users inputs
 if len(sys.argv)==1:
     sdate='2026-01-07' #start date
-    edate='2026-01-08' #end date
+    edate='2026-10-08' #end date
     delete=False #delete input files?
     replace=False #replace existing files?
     path_config=os.path.join(cd,'configs/config_crosswind.yaml') #config path
